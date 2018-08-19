@@ -1,3 +1,23 @@
+type Question {
+  id: ID!
+  question: String
+  contents: String
+  answers: [Answer!]!
+}
+
+type Answer {
+  contents: String
+  questionId: String!
+}
+
 type Query {
-  greet(name: String!): String!
+  questions: [Question!]!
+  question(id: String!): Question
+  answers: [Answer!]!
+  answer(id: String!): Answer
+}
+
+type Mutation {
+  addQuestion(question: String, contents: String): Question
+  addAnswer(questionId: ID!, contents: String!): Answer
 }
