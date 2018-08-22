@@ -3,9 +3,11 @@ type Question {
   question: String
   contents: String
   answers: [Answer!]!
+  answerLength: Int!
 }
 
 type Answer {
+  id: ID!
   contents: String
   questionId: String!
 }
