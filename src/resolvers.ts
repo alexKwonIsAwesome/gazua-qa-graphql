@@ -18,7 +18,6 @@ export const resolvers = {
 
         const questionSnapshots = await query.get();
         return questionSnapshots.docs.map((snapshot) => {
-          console.log(snapshot.data());
           return snapshot.data();
         });
       } catch (e) {
@@ -55,7 +54,6 @@ export const resolvers = {
           id: newQuestionRef.id,
           question,
           contents,
-          answers: [],
           answersLength: 0,
           createdAt: time,
           updatedAt: time,
@@ -82,7 +80,6 @@ export const resolvers = {
         const questionRef = context.db.collection('questions').doc(questionId);
         const questionSnapshot = await questionRef.get();
         await questionRef.update({
-          answers: [ ...questionSnapshot.data().answers, newAnswerRef.id ],
           answersLength: questionSnapshot.data().answers.length + 1,
         });
 
