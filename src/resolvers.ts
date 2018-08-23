@@ -110,14 +110,6 @@ export const resolvers = {
       } catch (e) {
         throw new Error(e);
       }
-    },
-    async answerLength(root, args, context, info) {
-      try {
-        const answerSnapshots = await context.db.collection('answers').where('questionId', '==', root.id).get();
-        return answerSnapshots.docs.length;
-      } catch (e) {
-        throw new Error(e);
-      }
     }
   },
   Answer: {

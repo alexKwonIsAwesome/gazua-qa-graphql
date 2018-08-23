@@ -3,7 +3,7 @@ type Question {
   question: String
   contents: String
   answers: [Answer!]!
-  answerLength: Int!
+  answersLength: Int!
   createdAt: String!
   updatedAt: String!
 }
