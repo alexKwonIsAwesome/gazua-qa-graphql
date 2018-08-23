@@ -57,6 +57,7 @@ export const resolvers = {
     async addAnswer(root, args, context, info) {
       try {
         const { questionId, contents } = args;
+        const time = context.Firestore.FieldValue.serverTimestamp();
 
         // add new answer doc
         const newAnswerRef = context.db.collection('answers').doc();
@@ -64,13 +65,15 @@ export const resolvers = {
           id: newAnswerRef.id,
           contents,
           questionId,
+          createdAt: time,
+          updatedAt: time,
         });
 
         // add answer doc id to questions.answers
         const questionRef = context.db.collection('questions').doc(questionId);
         const questionSnapshot = await questionRef.get();
         await questionRef.update({
-          answersLength: questionSnapshot.data().answers.length + 1,
+          answersLength: questionSnapshot.data().answersLength + 1,
         });
 
         const newAnswerSnapshot = await newAnswerRef.get();
@@ -97,7 +100,10 @@ export const resolvers = {
     },
     async answers(root, args, context, info) {
       try {
-        const answerSnapshots = await context.db.collection('answers').where('questionId', '==', root.id).get();
+        const answerSnapshots = await context.db.collection('answers')
+          .where('questionId', '==', root.id)
+          .orderBy('updatedAt', 'asc')
+          .get();
         return answerSnapshots.docs.map((snapshot) => {
           return snapshot.data();
         });
@@ -113,5 +119,21 @@ export const resolvers = {
         throw new Error(e);
       }
     }
+  },
+  Answer: {
+    async createdAt(root, args, context, info) {
+      try {
+        return root.createdAt.toMillis();
+      } catch (e) {
+        throw new Error(e);
+      }
+    },
+    async updatedAt(root, args, context, info) {
+      try {
+        return root.updatedAt.toMillis();
+      } catch (e) {
+        throw new Error(e);
+      }
+    },
   }
 };

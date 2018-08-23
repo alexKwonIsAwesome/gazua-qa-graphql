@@ -12,6 +12,8 @@ type Answer {
   id: ID!
   contents: String
   questionId: String!
+  createdAt: String!
+  updatedAt: String!
 }
 
 type Query {
