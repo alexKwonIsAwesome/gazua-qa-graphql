@@ -17,7 +17,6 @@ type Answer {
 type Query {
   questions(offset: Int!, limit: Int!, answers: String): [Question!]!
   question(id: ID!): Question
-  answers: [Answer!]!
 }
 
 type Mutation {

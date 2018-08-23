@@ -32,16 +32,6 @@ export const resolvers = {
       } catch (e) {
         throw new Error(e);
       }
-    },
-    async answers(root, args, context, info) {
-      try {
-        const answerSnapshots = await context.db.collection('answers').get();
-        return answerSnapshots.docs.map((snapshot) => {
-          return snapshot.data();
-        });
-      } catch (e) {
-        throw new Error(e);
-      }
     }
   },
   Mutation: {
