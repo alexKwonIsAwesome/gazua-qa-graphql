@@ -2,7 +2,17 @@ export const resolvers = {
   Query: {
     async questions(root, args, context, info) {
       try {
-        const questionSnapshots = await context.db.collection('questions').get();
+        let { offset, limit } = args;
+        if (offset < 0 || limit < 0) {
+          throw new Error('offset or limit should be positive integer');
+        }
+        const questionSnapshots =
+          await context.db
+          .collection('questions')
+          .orderBy('updatedAt', 'desc')
+          .offset(offset)
+          .limit(limit)
+          .get();
         return questionSnapshots.docs.map((snapshot) => {
           return snapshot.data();
         });
@@ -13,8 +23,8 @@ export const resolvers = {
     async question(root, args, context, info) {
       try {
         const { id } = args;
-        const questionDoc = await context.db.collection('questions').doc(id).get();
-        return questionDoc.data();
+        const questionSnapshot = await context.db.collection('questions').doc(id).get();
+        return questionSnapshot.data();
       } catch (e) {
         throw new Error(e);
       }

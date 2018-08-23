@@ -15,13 +15,12 @@ type Answer {
 }
 
 type Query {
-  questions: [Question!]!
-  question(id: String!): Question
+  questions(offset: Int!, limit: Int!): [Question!]!
+  question(id: ID!): Question
   answers: [Answer!]!
-  answer(id: String!): Answer
 }
 
 type Mutation {
-  addQuestion(question: String, contents: String): Question
-  addAnswer(questionId: ID!, contents: String!): Answer
+  addQuestion(question: String!, contents: String!): Question!
+  addAnswer(questionId: ID!, contents: String!): Answer!
 }
