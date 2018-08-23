@@ -4,6 +4,8 @@ type Question {
   contents: String
   answers: [Answer!]!
   answerLength: Int!
+  createdAt: String!
+  updatedAt: String!
 }
 
 type Answer {
