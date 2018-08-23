@@ -2,18 +2,23 @@ export const resolvers = {
   Query: {
     async questions(root, args, context, info) {
       try {
-        let { offset, limit } = args;
+        let { offset, limit, answers } = args;
         if (offset < 0 || limit < 0) {
           throw new Error('offset or limit should be positive integer');
         }
-        const questionSnapshots =
-          await context.db
-          .collection('questions')
+
+        let query = context.db.collection('questions')
           .orderBy('updatedAt', 'desc')
           .offset(offset)
           .limit(limit)
-          .get();
+
+        if (answers === 'none') {
+          query = query.where('answersLength', '==', 0);
+        }
+
+        const questionSnapshots = await query.get();
         return questionSnapshots.docs.map((snapshot) => {
+          console.log(snapshot.data());
           return snapshot.data();
         });
       } catch (e) {
@@ -50,6 +55,8 @@ export const resolvers = {
           id: newQuestionRef.id,
           question,
           contents,
+          answers: [],
+          answersLength: 0,
           createdAt: time,
           updatedAt: time,
         });
@@ -62,12 +69,23 @@ export const resolvers = {
     async addAnswer(root, args, context, info) {
       try {
         const { questionId, contents } = args;
+
+        // add new answer doc
         const newAnswerRef = context.db.collection('answers').doc();
         await newAnswerRef.set({
           id: newAnswerRef.id,
           contents,
           questionId,
         });
+
+        // add answer doc id to questions.answers
+        const questionRef = context.db.collection('questions').doc(questionId);
+        const questionSnapshot = await questionRef.get();
+        await questionRef.update({
+          answers: [ ...questionSnapshot.data().answers, newAnswerRef.id ],
+          answersLength: questionSnapshot.data().answers.length + 1,
+        });
+
         const newAnswerSnapshot = await newAnswerRef.get();
         return newAnswerSnapshot.data();
       } catch (e) {
@@ -108,6 +126,5 @@ export const resolvers = {
         throw new Error(e);
       }
     }
-
   }
 };
